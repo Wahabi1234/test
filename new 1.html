@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reserve a Meeting Date</title>
+    <!-- Kendo UI CSS (CDN) -->
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/themes/6.6.0/default/default-main.css" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Kendo UI JS (CDN) -->
+    <script src="https://kendo.cdn.telerik.com/2024.1.319/js/kendo.all.min.js"></script>
+    <style>
+        body { background: #f5f6fa; font-family: Arial, sans-serif; }
+        .container { max-width: 400px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+        .k-widget { width: 100% !important; }
+        label { font-weight: bold; margin-top: 20px; display: block; }
+        .btn { margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="text-center">
+        <img src="https://www.telerik.com/sfimages/default-source/logos/kendo-ui.png" alt="logo" style="height:40px;margin-bottom:20px;">
+    </div>
+    <form id="appointmentForm">
+        <label for="appointmentDate">Appointment Date <span style="color:red">*</span></label>
+        <input id="appointmentDate" name="appointmentDate" required />
+
+        <label for="appointmentSlot">Appointment Slot <span style="color:red">*</span></label>
+        <input id="appointmentSlot" name="appointmentSlot" required />
+
+        <button type="submit" class="k-button k-primary btn">Reserve</button>
+    </form>
+    <div id="result" style="margin-top:20px;color:green;font-weight:bold;"></div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Initialize Kendo DatePicker
+    $("#appointmentDate").kendoDatePicker({
+        format: "yyyy-MM-dd",
+        min: new Date(), // today
+        change: function() {
+            // You could load available slots for the selected date here
+            // For demo, we'll just reset the slot selection
+            $("#appointmentSlot").data("kendoDropDownList").value("");
+        }
+    });
+
+    // Example slots (in real app, load from server based on date)
+    var slots = [
+        { Id: "1", Name: "09:00 - 10:00" },
+        { Id: "2", Name: "10:00 - 11:00" },
+        { Id: "3", Name: "11:00 - 12:00" },
+        { Id: "4", Name: "13:00 - 14:00" },
+        { Id: "5", Name: "14:00 - 15:00" }
+    ];
+
+    // Initialize Kendo DropDownList
+    $("#appointmentSlot").kendoDropDownList({
+        optionLabel: "--Select--",
+        dataTextField: "Name",
+        dataValueField: "Id",
+        dataSource: slots,
+        filter: "contains"
+    });
+
+    // Handle form submission
+    $("#appointmentForm").on("submit", function(e) {
+        e.preventDefault();
+        var date = $("#appointmentDate").val();
+        var slot = $("#appointmentSlot").data("kendoDropDownList").text();
+        if(date && slot && slot !== "--Select--") {
+            $("#result").text("Meeting reserved for " + date + " at " + slot + "!");
+        } else {
+            $("#result").css("color", "red").text("Please select both date and slot.");
+        }
+    });
+});
+</script>
+</body>
+</html>
